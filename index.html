@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        *{ margin: 0; padding: 0; border: 0;}
+        .content{ width: 500px; height: 400px; background: pink; position: absolute; left: 50%; top: 50%; margin-left: -250px; margin-top: -200px;
+        }
+        .content button{
+            width: 50px;
+            height: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    账号：<input type="text" id="user"><br />
+    密码：<input type="text" id="pass"><br />
+    <button id="btn_left">注册</button>
+    <button id="btn_right">登入</button>
+</div>
+
+<script>
+
+    btn_left.onclick = function(){
+        ajax({
+            url:'http://localhost:8000',
+            type:'post',
+            data:{
+                user:user.value,
+                pass:pass.value
+            },
+            success:function(data){
+                console.log(data)
+            }
+        })
+    }
+
+    btn_right.onclick = function(){
+        ajax({
+            url:'http://localhost:8080',
+            type:'post',
+            data:{
+                user:user.value,
+                pass:pass.value
+            },
+            success:function(data){
+                if(data == '登入成功'){
+                    window.location = 'fabu.html';
+                }
+            }
+        })
+    }
+
+
+
+    function ajax(option){
+        var arr=[];
+        var str='';
+        for(var i in option.data){
+
+            arr.push(i+'='+option.data[i])
+        }
+        str=arr.join('&')
+
+        var ajax = new XMLHttpRequest();
+
+        if(option.type == 'get'){
+            ajax.open('get',option.url+'?'+str,true);
+            ajax.send()
+        }
+        else if(option.type == 'post'){
+            ajax.open('post',option.url,true);
+            ajax.setRequestHeader('Content-Type','application/x-www-form-urlencoded')  //Content-Type 数据类型
+            ajax.send(str);
+        }
+
+        ajax.onreadystatechange=function(){
+            if(ajax.readyState == 4){
+                if(ajax.status>=200 && ajax.status<300 || ajax.status == 304){
+                    option.success(ajax.responseText)
+                }
+                else{
+                    option.error && option.error();
+                }
+            }
+        }
+    }
+</script>
+</body>
+</html>
